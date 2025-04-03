@@ -60,15 +60,20 @@ int authenticate_user(const char *username, const char *password){
         return -1;
     }
 
-    char stored_username[MAX_USERNAME_LEN], stored_salt[SALT_SIZE], stored_password[HASH_SIZE];
-    char hashed_input[HASH_SIZE];
+    char stored_username[MAX_USERNAME_LEN], stored_salt[SALT_SIZE + 1], stored_password[HASH_SIZE + 1];
+    char hashed_input[HASH_SIZE + 1];
 
     
 
     //check if the username and password matches a stored entry
-    while(fscanf(file, "%s %s %s", stored_salt, stored_password, stored_username) !=EOF){
+    while(fscanf(file, "%s %s %s", stored_username, stored_salt, stored_password) !=EOF){
+       // printf("\n[DEBUG] Checking user: %s | Salt: %s | Stored Hash: %s\n", 
+        //    stored_username, stored_salt, stored_password);
+
         if(strcmp(username, stored_username) == 0 ) {
             hash_password(password, stored_salt, hashed_input); // Hash the input password plus salt
+         //   printf("[DEBUG 2] Computed Hash: %s\n", hashed_input);
+
             if (strcmp(hashed_input, stored_password) == 0){
                 fclose(file);
                 printf("Login sucessfull\n");
