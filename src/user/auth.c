@@ -66,13 +66,13 @@ int authenticate_user(const char *username, const char *password){
     
 
     //check if the username and password matches a stored entry
-    while(fscanf(file, "%s %s %s", stored_username, stored_salt, stored_password) !=EOF){
+    while(fscanf(file, "%s %s %s", stored_password, stored_username, stored_salt ) !=EOF){
        // printf("\n[DEBUG] Checking user: %s | Salt: %s | Stored Hash: %s\n", 
-        //    stored_username, stored_salt, stored_password);
+       //    stored_username, stored_salt, stored_password);
 
         if(strcmp(username, stored_username) == 0 ) {
             hash_password(password, stored_salt, hashed_input); // Hash the input password plus salt
-         //   printf("[DEBUG 2] Computed Hash: %s\n", hashed_input);
+         //  printf("[DEBUG 2] Computed Hash: %s\n", hashed_input);
 
             if (strcmp(hashed_input, stored_password) == 0){
                 fclose(file);
