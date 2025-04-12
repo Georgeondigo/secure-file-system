@@ -86,3 +86,25 @@ int authenticate_user(const char *username, const char *password){
     printf("Invalid username or password\n");
     return 0;
 }
+// Retrieve user-specific salt from the user database
+int get_user_salt(const char *username, unsigned char *salt_out) {
+    FILE *file = fopen(USER_DB, "r");
+    if (!file) return 0;
+
+    char stored_username[MAX_USERNAME_LEN];
+    char stored_salt[SALT_SIZE + 1], stored_password[HASH_SIZE + 1];
+
+    while (fscanf(file, "%s %s %s", stored_password, stored_username, stored_salt) == 3) {
+        if (strcmp(username, stored_username) == 0) {
+            // Convert salt string to raw bytes
+            for (int i = 0; i < SALT_SIZE; i++) {
+                sscanf(&stored_salt[i * 2], "%2hhx", &salt_out[i]);
+            }
+            fclose(file);
+            return 1;
+        }
+    }
+
+    fclose(file);
+    return 0;
+}

@@ -11,6 +11,23 @@
 #define AES_KEY_SIZE 32 // 256 bit
 #define AES_IV_SIZE 16 // 128 bit
 
+void derive_key_from_password(const char *password, const unsigned char *salt, unsigned char *key_out, unsigned char *iv_out) {
+    unsigned char key[AES_KEY_SIZE + AES_IV_SIZE];
+
+    PKCS5_PBKDF2_HMAC(
+        password, strlen(password),
+        salt, SALT_LENGTH,
+        PBKDF2_ITERATIONS,
+        EVP_sha256(),
+        sizeof(key),
+        key
+    );
+
+    memcpy(key_out, key, AES_KEY_SIZE);
+    memcpy(iv_out, key + AES_KEY_SIZE, AES_IV_SIZE);
+}
+
+
 int encrypt_file(const char *input_path, const char *output_path, const unsigned char *key, const unsigned char *iv) {
     FILE *in = fopen(input_path, "rb");
     FILE *out = fopen(output_path, "wb");
